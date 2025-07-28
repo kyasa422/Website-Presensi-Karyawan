@@ -83,7 +83,7 @@ class PresensiController extends Controller
         // Validasi input dari form modal
         $request->validate([
             'lokasi' => 'required|string',
-            'foto_lokasi' => 'required|image|max:2048', // Validasi file gambar
+            'foto_lokasi' => 'required|image|max:10240', // Validasi file gambar
             'catatan' => 'nullable|string',
         ]);
 

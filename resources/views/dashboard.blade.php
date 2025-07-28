@@ -169,8 +169,8 @@
                                             <input type="file" name="foto_lokasi" id="foto" accept="image/*"
                                                 capture="user" required
                                                 class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                onchange="if(this.files[0] && this.files[0].size > 2 * 1024 * 1024){ alert('Ukuran gambar maksimal 2MB!'); this.value=''; }">
-                                            <p class="mt-1 text-sm text-gray-500">Format: JPG, PNG, Max: 2MB</p>
+                                                onchange="if(this.files[0] && this.files[0].size > 10 * 1024 * 1024){ alert('Ukuran gambar maksimal 10MB!'); this.value=''; }">
+                                            <p class="mt-1 text-sm text-gray-500">Format: JPG, PNG, Max: 10MB</p>
                                         </div>
 
                                         <div>
