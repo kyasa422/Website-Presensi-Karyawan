@@ -258,6 +258,11 @@
 
                                         console.log(" longitude:", lon, "latitude:", lat);
 
+                                        console.log("Kecamatan:", kecamatan, "Kota:", city);
+                                        console.log("Data lengkap:", data.address);
+                                        // --- AKHIR PERUBAHAN ---
+                                        
+
                                     } catch (error) {
                                         this.locationStatus = 'Gagal mendapatkan nama lokasi.';
                                         console.error("Error reverse geocoding:", error);
