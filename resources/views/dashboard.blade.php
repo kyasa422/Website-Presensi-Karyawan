@@ -251,6 +251,7 @@
 
                                         if (this.locationName) {
                                             this.locationStatus = `📍 Lokasi Anda: ${this.locationName}`;
+                                            console.log(data.address.suburb, data.address.city_district, data.address.quarter, data.address.neighbourhood, data.address.county);
                                         } else {
                                             this.locationStatus = 'Nama lokasi tidak ditemukan.';
                                         }
