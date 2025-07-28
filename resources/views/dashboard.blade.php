@@ -242,7 +242,9 @@
                                             data.address.city_district ||
                                             data.address.quarter ||
                                             data.address.neighbourhood ||
-                                            data.address.county;
+                                            data.address.county ||
+                                            data.address.village; // <-- TAMBAHKAN FALLBACK KE VILLAGE DI SINI
+
 
                                         const city = data.address.city || data.address.town || data.address.village;
 
@@ -261,7 +263,7 @@
                                         console.log("Kecamatan:", kecamatan, "Kota:", city);
                                         console.log("Data lengkap:", data.address);
                                         // --- AKHIR PERUBAHAN ---
-                                        
+
 
                                     } catch (error) {
                                         this.locationStatus = 'Gagal mendapatkan nama lokasi.';
