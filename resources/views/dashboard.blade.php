@@ -158,9 +158,9 @@
                                     <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">
                                         Konfirmasi Kehadiran
                                     </h3>
-                                    <div class="mt-2">
-                                        <p class="text-sm text-gray-500" x-text="locationStatus"></p>
+                                    <div id="map" class="w-full h-64 mt-4 rounded-md shadow border border-gray-300">
                                     </div>
+                                    <p class="text-sm text-gray-600 mt-2" x-text="locationStatus"></p>
 
                                     <form @submit.prevent="submitPresensi($event)" class="mt-4 space-y-4">
                                         <div>
@@ -198,121 +198,129 @@
                     </div>
 
                     <script>
-                        function presensiModal() {
-                            return {
-                                isModalOpen: false,
-                                isSubmitting: false,
-                                locationStatus: 'Mencari lokasi Anda...',
-                                locationName: '',
+       function presensiModal() {
+    return {
+        isModalOpen: false,
+        isSubmitting: false,
+        locationStatus: 'Mencari lokasi Anda...',
+        locationName: '',
+        map: null,
+        marker: null,
 
-                                openModal() {
-                                    this.isModalOpen = true;
-                                    this.getLocation();
-                                },
+        openModal() {
+            this.isModalOpen = true;
+            this.getLocation();
+        },
 
-                                getLocation() {
-                                    if (!navigator.geolocation) {
-                                        this.locationStatus = 'Geolocation tidak didukung oleh browser ini.';
-                                        return;
-                                    }
+        getLocation() {
+            if (!navigator.geolocation) {
+                this.locationStatus = 'Geolocation tidak didukung oleh browser ini.';
+                return;
+            }
 
-                                    navigator.geolocation.getCurrentPosition(
-                                        (position) => {
-                                            this.locationStatus = 'Lokasi ditemukan! Mengambil nama lokasi...';
-                                            this.getCityFromCoordinates(position.coords.latitude, position.coords.longitude);
-                                        },
-                                        () => {
-                                            this.locationStatus = 'Gagal mengakses lokasi. Pastikan Anda telah memberikan izin lokasi.';
-                                        }
-                                    );
-                                },
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
 
-                                // Menggunakan API gratis OpenStreetMap Nominatim
-                                async getCityFromCoordinates(lat, lon) {
-                                    try {
-                                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
-                                        const data = await response.json();
+                    this.locationStatus = 'Lokasi ditemukan! Mengambil nama lokasi...';
 
-                                        // Cek seluruh isi data untuk debugging jika perlu
-                                        // console.log(data.address);
+                    this.initMap(lat, lon); // Tampilkan peta di lokasi pengguna
+                    this.getCityFromCoordinates(lat, lon);
+                },
+                () => {
+                    this.locationStatus = 'Gagal mengakses lokasi. Pastikan Anda telah memberikan izin lokasi.';
+                }
+            );
+        },
 
-                                        // --- PERUBAIKAN DI SINI ---
-                                        // Prioritaskan field yang paling mungkin berisi nama kecamatan
-                                        const kecamatan = data.address.suburb ||
-                                            data.address.city_district ||
-                                            data.address.quarter ||
-                                            data.address.neighbourhood ||
-                                            data.address.county ||
-                                            data.address.village; // <-- TAMBAHKAN FALLBACK KE VILLAGE DI SINI
+        initMap(lat, lon) {
+            this.$nextTick(() => {
+                if (!this.map) {
+                    this.map = L.map('map').setView([lat, lon], 15);
 
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(this.map);
 
-                                        const city = data.address.city || data.address.town || data.address.village;
+                    this.marker = L.marker([lat, lon]).addTo(this.map)
+                        .bindPopup('Lokasi Anda').openPopup();
+                } else {
+                    this.map.setView([lat, lon], 15);
+                    this.marker.setLatLng([lat, lon]).bindPopup('Lokasi Anda').openPopup();
+                }
+            });
+        },
 
-                                        // Gabungkan dengan rapi, hindari "undefined, Bandar Lampung"
-                                        this.locationName = [kecamatan, city].filter(Boolean).join(', ');
+        async getCityFromCoordinates(lat, lon) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                const data = await response.json();
 
-                                        if (this.locationName) {
-                                            this.locationStatus = `📍 Lokasi Anda: ${this.locationName}`;
-                                            console.log(data.address.suburb, data.address.city_district, data.address.quarter, data.address.neighbourhood, data.address.county);
-                                        } else {
-                                            this.locationStatus = 'Nama lokasi tidak ditemukan.';
-                                        }
+                const kecamatan = data.address.suburb ||
+                    data.address.city_district ||
+                    data.address.quarter ||
+                    data.address.neighbourhood ||
+                    data.address.county ||
+                    data.address.village;
 
-                                        console.log(" longitude:", lon, "latitude:", lat);
+                const city = data.address.city || data.address.town || data.address.village;
 
-                                        console.log("Kecamatan:", kecamatan, "Kota:", city);
-                                        console.log("Data lengkap:", data.address);
-                                        // --- AKHIR PERUBAHAN ---
+                this.locationName = [kecamatan, city].filter(Boolean).join(', ');
 
+                if (this.locationName) {
+                    this.locationStatus = `📍 Lokasi Anda: ${this.locationName}`;
+                } else {
+                    this.locationStatus = 'Nama lokasi tidak ditemukan.';
+                }
 
-                                    } catch (error) {
-                                        this.locationStatus = 'Gagal mendapatkan nama lokasi.';
-                                        console.error("Error reverse geocoding:", error);
-                                    }
-                                },
+            } catch (error) {
+                this.locationStatus = 'Gagal mendapatkan nama lokasi.';
+                console.error("Error reverse geocoding:", error);
+            }
+        },
 
-                                async submitPresensi(event) {
-                                    this.isSubmitting = true;
+        async submitPresensi(event) {
+            this.isSubmitting = true;
 
-                                    const form = event.target;
-                                    const formData = new FormData(form);
-                                    formData.append('lokasi', this.locationName);
+            const form = event.target;
+            const formData = new FormData(form);
+            formData.append('lokasi', this.locationName);
 
-                                    // Ambil CSRF token
-                                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                                    try {
-                                        const response = await fetch("{{ route('presensi.clockIn') }}", {
-                                            method: 'POST',
-                                            headers: {
-                                                'X-CSRF-TOKEN': csrfToken,
-                                                'Accept': 'application/json',
-                                            },
-                                            body: formData
-                                        });
+            try {
+                const response = await fetch("{{ route('presensi.clockIn') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
 
-                                        const result = await response.json();
+                const result = await response.json();
 
-                                        if (!response.ok) {
-                                            console.error('Submit error:', result);
-                                            this.isSubmitting = false;
-                                            alert(result.error || 'Terjadi kesalahan.');
-                                        } else {
-                                            alert(result.message);
-                                            window.location.reload(); // Refresh halaman setelah berhasil
-                                        }
+                if (!response.ok) {
+                    console.error('Submit error:', result);
+                    this.isSubmitting = false;
+                    alert(result.error || 'Terjadi kesalahan.');
+                } else {
+                    alert(result.message);
+                    window.location.reload();
+                }
 
-                                    } catch (error) {
+            } catch (error) {
+                console.error('Submit error:', error);
+                alert('Gagal mengirim data presensi.');
+            } finally {
+                this.isSubmitting = false;
+                this.isModalOpen = false;
+            }
+        }
+    }
+}
 
-                                        console.error('Submit error:', error);
-                                        alert('Gagal mengirim data presensi.');
-                                    } finally {
-                                        this.isSubmitting = false;
-                                        this.isModalOpen = false;
-                                    }
-                                }
-                            }
-                        }
                     </script>
 
                     </form>

@@ -14,6 +14,14 @@
 
     <!-- Scripts -->
     <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
