@@ -70,4 +70,21 @@ class AdminController extends Controller
         // 7. Download PDF
         return $pdf->download($fileName);
     }
+
+
+    /**
+     * Menghapus data presensi berdasarkan ID.
+     */
+    public function deletePresensi($id)
+    {
+        // 1. Temukan data presensi berdasarkan ID
+        $presensi = Presensi::findOrFail($id);
+        // 2. Hapus data presensi
+        $presensi->delete();
+        // 3. Redirect kembali ke halaman dashboard dengan pesan sukses
+        return redirect()->route('admin.dashboard')->with('success', 'Presensi berhasil dihapus');
+    
+        
+    
+    }
 }

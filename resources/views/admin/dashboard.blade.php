@@ -96,6 +96,7 @@
                         <th class="px-4 py-2">Check In</th>
                         <th class="px-4 py-2">Status</th>
                         <th class="px-4 py-2">Alasan</th>
+                        <th class="px-4 py-2">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,6 +121,13 @@
                             <td data-label="Check In">{{ $item->clock_in ? $item->clock_in->format('H:i:s') : '-' }}</td>
                             <td data-label="Status">{{ $item->status }}</td>
                             <td data-label="Alasan">{{ $item->catatan ? $item->catatan : '-' }}</td>
+                            <td data-label="Aksi">
+                                <form action="{{ route('admin.presensi.delete', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus presensi ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800">Hapus</button>
+                                </form> 
+                            </td>
                         </tr>
                     @empty
                         <tr>

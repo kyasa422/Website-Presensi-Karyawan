@@ -97,7 +97,7 @@ $register = function () {
         <div class="mt-4">
             <x-input-label for="jurusan" :value="__('Jurusan')" />
             <select wire:model="jurusan" id="jurusan" name="jurusan" class="block mt-1 w-full border-gray-300 focus:border-green-800 focus:ring-green-800 rounded-md shadow-sm" required>
-                <option value="" disabled>Pilih Jurusan Anda</option>
+                <option value="" disabled>Pilih program studi</option>
                 <option value="Biologi">Biologi</option>
                 <option value="Teknik Kimia">Teknik Kimia</option>
                 <option value="Ilmu hukum">Ilmu hukum</option>

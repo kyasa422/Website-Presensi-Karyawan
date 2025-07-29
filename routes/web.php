@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function() {
     Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     // Ganti PresensiController menjadi AdminController untuk route ini
 Route::get('/admin/presensi/rekap/pdf', [AdminController::class, 'generateRekapPDF'])->name('admin.presensi.rekap.pdf');
+    Route::delete('/admin/presensi/{id}', [AdminController::class, 'deletePresensi'])->name('admin.presensi.delete');
 });
 
 // --- ROUTE UMUM UNTUK SEMUA USER YANG LOGIN ---
