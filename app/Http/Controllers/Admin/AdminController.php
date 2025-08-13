@@ -70,39 +70,39 @@ class AdminController extends Controller
 
         // --- TAMBAHAN: Proses gambar menjadi Base64 ---
         // --- GANTI BLOK FOREACH ANDA DENGAN INI UNTUK DEBUGGING ---
-        foreach ($presensi as $item) {
-            $item->foto_base64 = null; // Set nilai default
+        // foreach ($presensi as $item) {
+        //     $item->foto_base64 = null; // Set nilai default
 
-            // Lewati item ini jika kolom foto_lokasi kosong
-            if (!$item->foto_lokasi) {
-                continue;
-            }
+        //     // Lewati item ini jika kolom foto_lokasi kosong
+        //     if (!$item->foto_lokasi) {
+        //         continue;
+        //     }
 
-            // --- LOGIKA CERDAS UNTUK MENANGANI PATH ---
+        //     // --- LOGIKA CERDAS UNTUK MENANGANI PATH ---
 
-            // 1. Ambil path mentah dari database
-            $rawPath = $item->foto_lokasi;
+        //     // 1. Ambil path mentah dari database
+        //     $rawPath = $item->foto_lokasi;
 
-            // 2. "Bersihkan" path: Hapus awalan 'public/' jika ada.
-            $cleanPath = $rawPath;
-            if (strpos($rawPath, 'public/') === 0) {
-                // substr() lebih aman daripada str_replace() dalam kasus ini
-                $cleanPath = substr($rawPath, strlen('public/'));
-            }
+        //     // 2. "Bersihkan" path: Hapus awalan 'public/' jika ada.
+        //     $cleanPath = $rawPath;
+        //     if (strpos($rawPath, 'public/') === 0) {
+        //         // substr() lebih aman daripada str_replace() dalam kasus ini
+        //         $cleanPath = substr($rawPath, strlen('public/'));
+        //     }
 
-            // 3. Bangun path absolut yang sekarang sudah pasti konsisten
-            $fullPath = storage_path('app/public/' . $cleanPath);
+        //     // 3. Bangun path absolut yang sekarang sudah pasti konsisten
+        //     $fullPath = storage_path('app/public/' . $cleanPath);
 
-            // --- AKHIR LOGIKA CERDAS ---
+        //     // --- AKHIR LOGIKA CERDAS ---
 
 
-            // 4. Lanjutkan proses konversi Base64 seperti biasa
-            if (file_exists($fullPath)) {
-                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
-                $data = file_get_contents($fullPath);
-                $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            }
-        }
+        //     // 4. Lanjutkan proses konversi Base64 seperti biasa
+        //     if (file_exists($fullPath)) {
+        //         $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+        //         $data = file_get_contents($fullPath);
+        //         $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        //     }
+        // }
         $pdf = PDF::loadView('admin.rekap_presensi', [
             'presensi' => $presensi,
             'titleDate' => $titleDate

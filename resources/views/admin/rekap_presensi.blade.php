@@ -54,7 +54,7 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Foto</th>
+                {{-- <th>Foto</th> --}}
                 <th>Nama</th>
                 <th>Lokasi</th>
                 <th>Tanggal</th>
@@ -78,13 +78,13 @@
                         @endif
                     </td> --}}
 
-                    <td>
+                    {{-- <td>
                         @if ($item->foto_base64)
                         <img src="{{ $item->foto_base64 }}" alt="Foto" class="foto">
                         @else
                         -
                         @endif
-                    </td>
+                    </td> --}}
                     <td>{{ $item->user->name }}</td>
                     <td>{{ $item->lokasi ?? '-' }}</td>
                     <td>{{ $item->created_at->format('d M Y') }}</td>
