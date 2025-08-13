@@ -1,18 +1,49 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Rekap Presensi</title>
     <style>
-        body { font-family: sans-serif; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; text-align: left; padding: 8px; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        .header { text-align: center; margin-bottom: 20px; }
-        h1 { font-size: 18px; }
-        .foto { width: 40px; height: 40px; object-fit: cover; }
+        body {
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 18px;
+        }
+
+        .foto {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Rekap Data Presensi</h1>
@@ -36,12 +67,20 @@
             @forelse ($presensi as $index => $item)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>
+                    {{-- <td>
                         @php
-                            $fotoPath = $item->foto_lokasi ? str_replace('public/', '', $item->foto_lokasi) : null;
+                        $fotoPath = $item->foto_lokasi ? str_replace('public/', '', $item->foto_lokasi) : null;
                         @endphp
                         @if ($fotoPath)
-                            <img src="{{ public_path('storage/' . $fotoPath) }}" alt="Foto" class="foto">
+                        <img src="{{ public_path('storage/' . $fotoPath) }}" alt="Foto" class="foto">
+                        @else
+                        -
+                        @endif
+                    </td> --}}
+
+                    <td>
+                        @if ($item->foto_base64)
+                            <img src="{{ $item->foto_base64 }}" alt="Foto" class="foto">
                         @else
                             -
                         @endif
@@ -61,4 +100,5 @@
         </tbody>
     </table>
 </body>
+
 </html>
