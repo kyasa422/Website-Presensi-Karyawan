@@ -42,79 +42,79 @@ class AdminController extends Controller
 
 // di AdminController.php
 
-public function generateRekapPDF(Request $request)
-{
-    // Ambil filter tanggal dan user yang sedang login
-    $filterDate = $request->input('filter_date');
-    $user = auth()->user();
+// public function generateRekapPDF(Request $request)
+// {
+//     // Ambil filter tanggal dan user yang sedang login
+//     $filterDate = $request->input('filter_date');
+//     $user = auth()->user();
 
-    // Kirim pekerjaan ke antrean
-    GeneratePresensiPdfJob::dispatch($filterDate, $user);
+//     // Kirim pekerjaan ke antrean
+//     GeneratePresensiPdfJob::dispatch($filterDate, $user);
 
-    // Langsung kembalikan respons ke pengguna
-    return back()->with('success', 'Laporan PDF sedang diproses. Anda akan diberitahu jika sudah siap.');
-}
-    // public function generateRekapPDF(Request $request)
-    // {
-    //     // ... (kode filter Anda dari no 1-3 sudah bagus) ...
-    //     $query = Presensi::with('user');
-    //     $titleDate = "Semua Periode";
+//     // Langsung kembalikan respons ke pengguna
+//     return back()->with('success', 'Laporan PDF sedang diproses. Anda akan diberitahu jika sudah siap.');
+// }
+    public function generateRekapPDF(Request $request)
+    {
+        // ... (kode filter Anda dari no 1-3 sudah bagus) ...
+        $query = Presensi::with('user');
+        $titleDate = "Semua Periode";
 
-    //     if ($request->input('filter_date')) {
-    //         $filterDate = $request->input('filter_date');
-    //         $query->whereDate('created_at', $filterDate);
-    //         $titleDate = "Tanggal " . \Carbon\Carbon::parse($filterDate)->translatedFormat('d F Y');
-    //     }
+        if ($request->input('filter_date')) {
+            $filterDate = $request->input('filter_date');
+            $query->whereDate('created_at', $filterDate);
+            $titleDate = "Tanggal " . \Carbon\Carbon::parse($filterDate)->translatedFormat('d F Y');
+        }
 
-    //     $presensi = $query->latest()->get();
+        $presensi = $query->latest()->get();
 
-    //     // --- TAMBAHAN: Proses gambar menjadi Base64 ---
-    //     // --- GANTI BLOK FOREACH ANDA DENGAN INI UNTUK DEBUGGING ---
-    //     foreach ($presensi as $item) {
-    //         $item->foto_base64 = null; // Set nilai default
+        // --- TAMBAHAN: Proses gambar menjadi Base64 ---
+        // --- GANTI BLOK FOREACH ANDA DENGAN INI UNTUK DEBUGGING ---
+        foreach ($presensi as $item) {
+            $item->foto_base64 = null; // Set nilai default
 
-    //         // Lewati item ini jika kolom foto_lokasi kosong
-    //         if (!$item->foto_lokasi) {
-    //             continue;
-    //         }
+            // Lewati item ini jika kolom foto_lokasi kosong
+            if (!$item->foto_lokasi) {
+                continue;
+            }
 
-    //         // --- LOGIKA CERDAS UNTUK MENANGANI PATH ---
+            // --- LOGIKA CERDAS UNTUK MENANGANI PATH ---
 
-    //         // 1. Ambil path mentah dari database
-    //         $rawPath = $item->foto_lokasi;
+            // 1. Ambil path mentah dari database
+            $rawPath = $item->foto_lokasi;
 
-    //         // 2. "Bersihkan" path: Hapus awalan 'public/' jika ada.
-    //         $cleanPath = $rawPath;
-    //         if (strpos($rawPath, 'public/') === 0) {
-    //             // substr() lebih aman daripada str_replace() dalam kasus ini
-    //             $cleanPath = substr($rawPath, strlen('public/'));
-    //         }
+            // 2. "Bersihkan" path: Hapus awalan 'public/' jika ada.
+            $cleanPath = $rawPath;
+            if (strpos($rawPath, 'public/') === 0) {
+                // substr() lebih aman daripada str_replace() dalam kasus ini
+                $cleanPath = substr($rawPath, strlen('public/'));
+            }
 
-    //         // 3. Bangun path absolut yang sekarang sudah pasti konsisten
-    //         $fullPath = storage_path('app/public/' . $cleanPath);
+            // 3. Bangun path absolut yang sekarang sudah pasti konsisten
+            $fullPath = storage_path('app/public/' . $cleanPath);
 
-    //         // --- AKHIR LOGIKA CERDAS ---
+            // --- AKHIR LOGIKA CERDAS ---
 
 
-    //         // 4. Lanjutkan proses konversi Base64 seperti biasa
-    //         if (file_exists($fullPath)) {
-    //             $type = pathinfo($fullPath, PATHINFO_EXTENSION);
-    //             $data = file_get_contents($fullPath);
-    //             $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-    //         }
-    //     }
-    //     $pdf = PDF::loadView('admin.rekap_presensi', [
-    //         'presensi' => $presensi,
-    //         'titleDate' => $titleDate
-    //     ]);
+            // 4. Lanjutkan proses konversi Base64 seperti biasa
+            if (file_exists($fullPath)) {
+                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+                $data = file_get_contents($fullPath);
+                $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        }
+        $pdf = PDF::loadView('admin.rekap_presensi', [
+            'presensi' => $presensi,
+            'titleDate' => $titleDate
+        ]);
 
-    //     // ... (kode generate nama file dan download sudah bagus) ...
-    //     $fileName = 'rekap-presensi-';
-    //     $fileName .= $request->input('filter_date') ? $request->input('filter_date') : 'semua';
-    //     $fileName .= '.pdf';
+        // ... (kode generate nama file dan download sudah bagus) ...
+        $fileName = 'rekap-presensi-';
+        $fileName .= $request->input('filter_date') ? $request->input('filter_date') : 'semua';
+        $fileName .= '.pdf';
 
-    //     return $pdf->download($fileName);
-    // }
+        return $pdf->download($fileName);
+    }
 
     // /**
     //  * Membuat dan mengunduh file PDF untuk rekap presensi.

@@ -48,22 +48,22 @@ class GeneratePresensiPdfJob implements ShouldQueue
         }
         $presensi = $query->latest()->get();
 
-        // 2. Proses gambar ke Base64 (logika cerdas yang sudah kita buat)
-        foreach ($presensi as $item) {
-            $item->foto_base64 = null;
-            if (!$item->foto_lokasi)
-                continue;
+        // // 2. Proses gambar ke Base64 (logika cerdas yang sudah kita buat)
+        // foreach ($presensi as $item) {
+        //     $item->foto_base64 = null;
+        //     if (!$item->foto_lokasi)
+        //         continue;
 
-            $rawPath = $item->foto_lokasi;
-            $cleanPath = (strpos($rawPath, 'public/') === 0) ? substr($rawPath, strlen('public/')) : $rawPath;
-            $fullPath = storage_path('app/public/' . $cleanPath);
+        //     $rawPath = $item->foto_lokasi;
+        //     $cleanPath = (strpos($rawPath, 'public/') === 0) ? substr($rawPath, strlen('public/')) : $rawPath;
+        //     $fullPath = storage_path('app/public/' . $cleanPath);
 
-            if (file_exists($fullPath)) {
-                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
-                $data = file_get_contents($fullPath);
-                $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            }
-        }
+        //     if (file_exists($fullPath)) {
+        //         $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+        //         $data = file_get_contents($fullPath);
+        //         $item->foto_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        //     }
+        // }
 
         // 3. Generate PDF
         $pdf = PDF::loadView('admin.rekap_presensi', [
@@ -72,19 +72,18 @@ class GeneratePresensiPdfJob implements ShouldQueue
         ]);
 
 
-        $pdf->download();
 
 
-        // // 4. Simpan PDF ke storage, jangan di-download
-        // $fileName = 'rekap-presensi-' . ($this->filterDate ?? 'semua') . '-' . time() . '.pdf';
-        // Storage::disk('public')->put('rekap-pdf/' . $fileName, $pdf->output());
+        // 4. Simpan PDF ke storage, jangan di-download
+        $fileName = 'rekap-presensi-' . ($this->filterDate ?? 'semua') . '-' . time() . '.pdf';
+        Storage::disk('public')->put('rekap-pdf/' . $fileName, $pdf->output());
 
-        // // 5. Beri tahu pengguna (Contoh: kirim notifikasi atau email)
-        // // Untuk sekarang, kita bisa log saja sebagai bukti
-        // \Illuminate\Support\Facades\Log::info("PDF '{$fileName}' telah berhasil dibuat untuk user: {$this->user->name}");
+        // 5. Beri tahu pengguna (Contoh: kirim notifikasi atau email)
+        // Untuk sekarang, kita bisa log saja sebagai bukti
+        \Illuminate\Support\Facades\Log::info("PDF '{$fileName}' telah berhasil dibuat untuk user: {$this->user->name}");
 
-        // // Di aplikasi nyata, Anda akan mengirim notifikasi ke database atau email
-        // // $this->user->notify(new \App\Notifications\PdfReadyNotification($fileName));
+        // Di aplikasi nyata, Anda akan mengirim notifikasi ke database atau email
+        // $this->user->notify(new \App\Notifications\PdfReadyNotification($fileName));
 
 
 
